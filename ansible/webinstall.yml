@@ -1,0 +1,41 @@
+---
+- name: http server 
+  hosts: rocky
+  tasks:
+    - name: install apache
+      dnf:
+        name: httpd
+        state: latest
+    - name: index html
+      file:
+        name: index.html
+        path: /var/www/html/index.html
+        mode: 0644
+        state: touch
+    - name: content add
+      copy:
+        dest: /var/www/html/index.html
+        content: "Welcome to Ansible Bootcamp!"
+    - name: apache start and enable
+      systemd:
+        name: httpd.service
+        state: started
+        enabled: true
+    - name: install firewalld
+      dnf:
+        name: firewalld
+        state: latest
+    - name: firewalld start 
+      systemd:
+        name: firewalld
+        state: started
+        enabled: true
+    - name: open port
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+    - name: firewalld reload
+      systemd:
+        name: firewalld
+        state: reloaded
